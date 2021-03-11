@@ -24,16 +24,34 @@
   (reduce (fn [r [op p]]
             (op r p)) (o p1 p2) (partition 2 expr)))
 
-(defn pascals-triangle 
-  ([n] (pascals-triangle [[1]]))
-  ([[_ last-row :as p]]
-   (conj p (reduce #() last-row))))
+(defn pascals-triangle [n]
+  (letfn [(p [res]
+            (if (> (count res) n)
+              (get res (dec n))
+              (p (conj res (conj (reduce #(conj %1 (apply + %2)) [1] (partition 2 1 (last res)))  1)))))]
+    (p [[1] [1 1]])))
 
 (defn fibonacci [n]
   (loop [res [1 1]]
     (if (> n (count res))
       (recur (conj res (+ (last res) (last (butlast res)))))
       res)))
+
+(defn binary-tree [bt]
+  (letfn [(f [[a b c]]
+            (and (= (count bt) 3)
+                 (not (nil? a))
+                 (or (nil? b) (if (coll? b)
+                                (f b)
+                                false))
+                 (or (nil? c) (if (coll? c)
+                                (f c)
+                                false))))]
+    (f  bt)))
+
+(defn my-map [f s]
+  (when (not (empty? s))
+    (lazy-seq (cons (f (first s)) (my-map f (rest s))))))
 
 (defn my-intersection [s1 s2]
   (filter s1 s2))
